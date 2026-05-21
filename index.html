@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
 
 <meta charset="UTF-8">
@@ -8,25 +7,26 @@
 
 <title>Geovisor Panamá</title>
 
-<!-- Leaflet -->
+<!-- LEAFLET -->
 <link rel="stylesheet"
-href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- Awesome Markers -->
+<!-- AWESOME MARKERS -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
 
-<!-- Font Awesome -->
+<!-- FONT AWESOME -->
 <link rel="stylesheet"
 href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
 <style>
 
-body{
+html, body{
+height:100%;
 margin:0;
 padding:0;
 }
@@ -71,10 +71,10 @@ font-family:Arial;
 
 <script>
 
-// MAPA
-const map = L.map('map').setView([8.5,-80],7);
+// CREAR MAPA
+const map = L.map('map').setView([8.5, -80], 7);
 
-// CAPA OSM
+// MAPA BASE
 const osm = L.tileLayer(
 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 {
@@ -82,7 +82,7 @@ attribution:'© OpenStreetMap'
 }
 ).addTo(map);
 
-// CAPA SATELITE
+// MAPA SATELITAL
 const satelite = L.tileLayer(
 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
 {
@@ -90,7 +90,7 @@ attribution:'Esri'
 }
 );
 
-// CONTROL DE CAPAS
+// CONTROL CAPAS
 const baseMaps = {
 "OpenStreetMap": osm,
 "Satélite": satelite
@@ -124,49 +124,43 @@ prefix: 'fa',
 markerColor: 'orange'
 });
 
-// PLAYA CORONADO
+// PLAYAS
+
 L.marker([8.5246,-79.8897], {icon: rojo})
 .addTo(map)
 .bindPopup(`
 <h2>Playa Coronado</h2>
-<p><b>Provincia:</b> Panamá Oeste</p>
-<p>Zona turística</p>
+<p>Panamá Oeste</p>
 `);
 
-// PLAYA SANTA CLARA
 L.marker([8.3765,-80.1086], {icon: azul})
 .addTo(map)
 .bindPopup(`
 <h2>Playa Santa Clara</h2>
-<p><b>Provincia:</b> Coclé</p>
-<p>Aguas tranquilas</p>
+<p>Coclé</p>
 `);
 
-// PLAYA FARALLÓN
 L.marker([8.3515,-80.1469], {icon: verde})
 .addTo(map)
 .bindPopup(`
 <h2>Playa Farallón</h2>
-<p><b>Provincia:</b> Coclé</p>
-<p>Turismo y resorts</p>
+<p>Coclé</p>
 `);
 
-// PLAYA VENAO
 L.marker([7.4335,-80.1875], {icon: naranja})
 .addTo(map)
 .bindPopup(`
 <h2>Playa Venao</h2>
-<p><b>Provincia:</b> Los Santos</p>
-<p>Surf internacional</p>
+<p>Los Santos</p>
 `);
 
 // LEYENDA
 
-const legend = L.control({position: 'bottomright'});
+const legend = L.control({position:'bottomright'});
 
-legend.onAdd = function () {
+legend.onAdd = function(){
 
-const div = L.DomUtil.create('div', 'legend');
+const div = L.DomUtil.create('div','legend');
 
 div.innerHTML = `
 <h3>Leyenda</h3>
@@ -178,6 +172,7 @@ div.innerHTML = `
 `;
 
 return div;
+
 };
 
 legend.addTo(map);
