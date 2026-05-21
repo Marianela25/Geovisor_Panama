@@ -74,8 +74,32 @@ L.control.layers(baseMaps).addTo(map);
 
 L.marker([8.9833,-79.5167])
 .addTo(map)
+.bindPopup(`
+<h2>Ciudad de Panamá</h2>
+
+<p><b>Población:</b> 1.5 millones</p>
+
+<p><b>Provincia:</b> Panamá</p>
+
+<p><b>Actividad:</b> Turismo y comercio</p>
+
+<img 
+src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Panama_City_Skyline.jpg"
+width="250">
+`);
+
+  L.marker([8.9833,-79.5167])
+.addTo(map)
 .bindPopup("Ciudad de Panamá");
 
+L.marker([8.4333,-80.5333])
+.addTo(map)
+.bindPopup("Penonomé");
+
+L.marker([8.1,-80.97])
+.addTo(map)
+.bindPopup("Santiago");
+  
 </script>
 
 </body>
