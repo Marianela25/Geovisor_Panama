@@ -72,33 +72,97 @@ const baseMaps = {
 
 L.control.layers(baseMaps).addTo(map);
 
-L.marker([8.9833,-79.5167])
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
+
+L.control.layers(baseMaps).addTo(map);
+  // Playa roja
+const rojo = L.AwesomeMarkers.icon({
+icon: 'umbrella-beach',
+prefix: 'fa',
+markerColor: 'red'
+});
+
+// Playa azul
+const azul = L.AwesomeMarkers.icon({
+icon: 'water',
+prefix: 'fa',
+markerColor: 'blue'
+});
+
+// Playa verde
+const verde = L.AwesomeMarkers.icon({
+icon: 'tree',
+prefix: 'fa',
+markerColor: 'green'
+});
+
+// Playa amarilla
+const amarillo = L.AwesomeMarkers.icon({
+icon: 'sun',
+prefix: 'fa',
+markerColor: 'orange'
+});
+
+// Playa Coronado
+L.marker([8.5246,-79.8897], {icon: rojo})
 .addTo(map)
 .bindPopup(`
-<h2>Ciudad de Panamá</h2>
-
-<p><b>Población:</b> 1.5 millones</p>
-
-<p><b>Provincia:</b> Panamá</p>
-
-<p><b>Actividad:</b> Turismo y comercio</p>
-
-<img 
-src="https://upload.wikimedia.org/wikipedia/commons/a/a1/Panama_City_Skyline.jpg"
-width="250">
+<h2>Playa Coronado</h2>
+<p>Provincia: Panamá Oeste</p>
+<p>Zona turística</p>
 `);
 
-  L.marker([8.9833,-79.5167])
+// Playa Santa Clara
+L.marker([8.3765,-80.1086], {icon: azul})
 .addTo(map)
-.bindPopup("Ciudad de Panamá");
+.bindPopup(`
+<h2>Playa Santa Clara</h2>
+<p>Provincia: Coclé</p>
+<p>Aguas tranquilas</p>
+`);
 
-L.marker([8.4333,-80.5333])
+// Playa Farallón
+L.marker([8.3515,-80.1469], {icon: verde})
 .addTo(map)
-.bindPopup("Penonomé");
+.bindPopup(`
+<h2>Playa Farallón</h2>
+<p>Provincia: Coclé</p>
+<p>Turismo y resorts</p>
+`);
 
-L.marker([8.1,-80.97])
+// Playa Venao
+L.marker([7.4335,-80.1875], {icon: amarillo})
 .addTo(map)
-.bindPopup("Santiago");
+.bindPopup(`
+<h2>Playa Venao</h2>
+<p>Provincia: Los Santos</p>
+<p>Surf internacional</p>
+`);
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+const legend = L.control({position: 'bottomright'});
+
+legend.onAdd = function () {
+
+const div = L.DomUtil.create('div', 'info legend');
+
+div.innerHTML = `
+<b>Leyenda</b><br>
+🔴 Turismo<br>
+🔵 Aguas tranquilas<br>
+🟢 Ecoturismo<br>
+🟠 Surf
+`;
+
+return div;
+};
+
+legend.addTo(map);
   
 </script>
 
