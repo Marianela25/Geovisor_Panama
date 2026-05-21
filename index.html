@@ -8,6 +8,11 @@
 
 <link rel="stylesheet"
 href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
+
+<link rel="stylesheet"
+href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
 
 <style>
 
@@ -46,7 +51,50 @@ box-shadow:0 0 10px rgba(0,0,0,0.3);
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+// ICONOS
 
+const rojo = L.AwesomeMarkers.icon({
+icon: 'umbrella-beach',
+prefix: 'fa',
+markerColor: 'red'
+});
+
+const azul = L.AwesomeMarkers.icon({
+icon: 'water',
+prefix: 'fa',
+markerColor: 'blue'
+});
+
+const verde = L.AwesomeMarkers.icon({
+icon: 'tree',
+prefix: 'fa',
+markerColor: 'green'
+});
+
+const naranja = L.AwesomeMarkers.icon({
+icon: 'sun',
+prefix: 'fa',
+markerColor: 'orange'
+});
+
+
+// PLAYAS
+
+L.marker([8.5246,-79.8897], {icon: rojo})
+.addTo(map)
+.bindPopup("<h2>Playa Coronado</h2>");
+
+L.marker([8.3765,-80.1086], {icon: azul})
+.addTo(map)
+.bindPopup("<h2>Playa Santa Clara</h2>");
+
+L.marker([8.3515,-80.1469], {icon: verde})
+.addTo(map)
+.bindPopup("<h2>Playa Farallón</h2>");
+
+L.marker([7.4335,-80.1875], {icon: naranja})
+.addTo(map)
+.bindPopup("<h2>Playa Venao</h2>");
 <script>
 
 const map = L.map('map').setView([8.5,-80],7);
