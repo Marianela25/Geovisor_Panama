@@ -7,56 +7,41 @@
 
 <title>Geovisor Panamá</title>
 
-<!-- LEAFLET -->
-<link rel="stylesheet"
-href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-<!-- AWESOME MARKERS -->
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.css"/>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.awesome-markers/2.0.4/leaflet.awesome-markers.js"></script>
-
-<!-- FONT AWESOME -->
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
-
 <style>
-
 html, body{
-height:100%;
-margin:0;
-padding:0;
+  height:100%;
+  margin:0;
+  padding:0;
 }
 
 #map{
-height:100vh;
-width:100%;
+  height:100vh;
+  width:100%;
 }
 
 .titulo{
-position:absolute;
-top:10px;
-left:60px;
-z-index:1000;
-background:white;
-padding:10px;
-border-radius:10px;
-font-family:Arial;
-box-shadow:0 0 10px rgba(0,0,0,0.3);
+  position:absolute;
+  top:10px;
+  left:60px;
+  z-index:1000;
+  background:white;
+  padding:10px 20px;
+  border-radius:10px;
+  font-family:Arial;
+  box-shadow:0 0 10px rgba(0,0,0,0.3);
 }
 
 .legend{
-background:white;
-padding:10px;
-border-radius:10px;
-line-height:25px;
-box-shadow:0 0 10px rgba(0,0,0,0.3);
-font-family:Arial;
+  background:white;
+  padding:10px;
+  border-radius:10px;
+  line-height:25px;
+  box-shadow:0 0 10px rgba(0,0,0,0.3);
+  font-family:Arial;
 }
-
 </style>
 
 </head>
@@ -64,7 +49,7 @@ font-family:Arial;
 <body>
 
 <div class="titulo">
-<h2>Geovisor Panamá</h2>
+  <h2>Geovisor Panamá</h2>
 </div>
 
 <div id="map"></div>
@@ -72,107 +57,81 @@ font-family:Arial;
 <script>
 
 // CREAR MAPA
-const map = L.map('map').setView([8.5, -80], 7);
+const map = L.map('map').setView([8.3, -80.2], 8);
 
 // MAPA BASE
 const osm = L.tileLayer(
-'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-{
-attribution:'© OpenStreetMap'
-}
+  'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  {
+    attribution:'© OpenStreetMap'
+  }
 ).addTo(map);
 
 // MAPA SATELITAL
 const satelite = L.tileLayer(
-'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-{
-attribution:'Esri'
-}
+  'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  {
+    attribution:'Esri'
+  }
 );
 
-// CONTROL CAPAS
+// CONTROL DE CAPAS
 const baseMaps = {
-"OpenStreetMap": osm,
-"Satélite": satelite
+  "OpenStreetMap": osm,
+  "Satélite": satelite
 };
 
 L.control.layers(baseMaps).addTo(map);
 
-// ICONOS
+// FUNCIÓN PARA CREAR PUNTOS
+function crearPunto(lat, lon, color, nombre, provincia, categoria){
+  return L.circleMarker([lat, lon], {
+    radius: 9,
+    color: "black",
+    weight: 1,
+    fillColor: color,
+    fillOpacity: 0.9
+  }).addTo(map)
+  .bindPopup(`
+    <h2>${nombre}</h2>
+    <p><b>Provincia:</b> ${provincia}</p>
+    <p><b>Categoría:</b> ${categoria}</p>
+  `);
+}
 
-const rojo = L.AwesomeMarkers.icon({
-icon: 'umbrella-beach',
-prefix: 'fa',
-markerColor: 'red'
+// PUNTOS TURÍSTICOS
+crearPunto(8.5246, -79.8897, "red", "Playa Coronado", "Panamá Oeste", "Turismo");
+crearPunto(8.3765, -80.1086, "blue", "Playa Santa Clara", "Coclé", "Aguas tranquilas");
+crearPunto(8.3515, -80.1469, "green", "Playa Farallón", "Coclé", "Ecoturismo");
+crearPunto(7.4335, -80.1875, "orange", "Playa Venao", "Los Santos", "Surf");
+
+// AJUSTAR ZOOM A LOS PUNTOS
+const bounds = [
+  [8.5246, -79.8897],
+  [8.3765, -80.1086],
+  [8.3515, -80.1469],
+  [7.4335, -80.1875]
+];
+
+map.fitBounds(bounds, {
+  padding: [50, 50]
 });
-
-const azul = L.AwesomeMarkers.icon({
-icon: 'water',
-prefix: 'fa',
-markerColor: 'blue'
-});
-
-const verde = L.AwesomeMarkers.icon({
-icon: 'tree',
-prefix: 'fa',
-markerColor: 'green'
-});
-
-const naranja = L.AwesomeMarkers.icon({
-icon: 'sun',
-prefix: 'fa',
-markerColor: 'orange'
-});
-
-// PLAYAS
-
-L.marker([8.5246,-79.8897], {icon: rojo})
-.addTo(map)
-.bindPopup(`
-<h2>Playa Coronado</h2>
-<p>Panamá Oeste</p>
-`);
-
-L.marker([8.3765,-80.1086], {icon: azul})
-.addTo(map)
-.bindPopup(`
-<h2>Playa Santa Clara</h2>
-<p>Coclé</p>
-`);
-
-L.marker([8.3515,-80.1469], {icon: verde})
-.addTo(map)
-.bindPopup(`
-<h2>Playa Farallón</h2>
-<p>Coclé</p>
-`);
-
-L.marker([7.4335,-80.1875], {icon: naranja})
-.addTo(map)
-.bindPopup(`
-<h2>Playa Venao</h2>
-<p>Los Santos</p>
-`);
 
 // LEYENDA
-
 const legend = L.control({position:'bottomright'});
 
 legend.onAdd = function(){
+  const div = L.DomUtil.create('div','legend');
 
-const div = L.DomUtil.create('div','legend');
+  div.innerHTML = `
+    <h3>Leyenda</h3>
+    <span style="color:red;">●</span> Turismo<br>
+    <span style="color:blue;">●</span> Aguas tranquilas<br>
+    <span style="color:green;">●</span> Ecoturismo<br>
+    <span style="color:orange;">●</span> Surf
+  `;
 
-div.innerHTML = `
-<h3>Leyenda</h3>
-
-🔴 Turismo<br>
-🔵 Aguas tranquilas<br>
-🟢 Ecoturismo<br>
-🟠 Surf
-`;
-
-return div;
-
+  return div;
 };
 
 legend.addTo(map);
