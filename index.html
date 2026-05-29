@@ -2,9 +2,8 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Distritos de Panamá 2024</title>
+    <title>Distritos de Panamá</title>
 
-    <!-- LEAFLET -->
     <link rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -40,16 +39,12 @@
 <body>
 
 <div class="titulo">
-    Distritos de Panamá 2024
+    Distritos de Panamá
 </div>
 
 <div id="map"></div>
 
-<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<!-- SHPJS -->
-<script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
 <script>
 
@@ -57,14 +52,14 @@
     var map = L.map('map').setView([8.5, -80], 7);
 
     // MAPA BASE
-    var osm = L.tileLayer(
+    L.tileLayer(
         'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         {
             attribution:'© OpenStreetMap'
         }
     ).addTo(map);
 
-    // FUNCIÓN DE COLORES
+    // FUNCIÓN DE COLOR
     function getColor(){
 
         var colores = [
@@ -85,19 +80,19 @@
         return colores[Math.floor(Math.random() * colores.length)];
     }
 
-    // CARGAR SHAPEFILE ZIP
-    shp("Distritos_2024.zip")
+    // CARGAR GEOJSON DESDE INTERNET
+    fetch('https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/panama-districts.geojson')
 
-    .then(function(data){
+    .then(response => response.json())
 
-        console.log(data);
+    .then(data => {
 
-        var distritos = L.geoJSON(data,{
+        var distritos = L.geoJSON(data, {
 
             style:function(feature){
 
                 return{
-                    color:"black",
+                    color:'black',
                     weight:1,
                     fillColor:getColor(),
                     fillOpacity:0.5
@@ -106,17 +101,7 @@
 
             onEachFeature:function(feature, layer){
 
-                var nombre = "Distrito";
-
-                // CAMBIAR SI TU CAMPO TIENE OTRO NOMBRE
-                if(feature.properties){
-
-                    nombre =
-                    feature.properties.NOMBRE ||
-                    feature.properties.NAME_2 ||
-                    feature.properties.DISTRITO ||
-                    "Distrito";
-                }
+                var nombre = feature.properties.name || "Distrito";
 
                 layer.bindPopup(
                     "<h3>" + nombre + "</h3>"
@@ -128,23 +113,13 @@
         // AJUSTAR MAPA
         map.fitBounds(distritos.getBounds());
 
-        // CONTROL DE CAPAS
-        L.control.layers(
-            {
-                "OpenStreetMap": osm
-            },
-            {
-                "Distritos 2024": distritos
-            }
-        ).addTo(map);
-
     })
 
-    .catch(function(error){
+    .catch(error => {
 
-        console.error("ERROR AL CARGAR EL SHAPEFILE:", error);
+        console.error(error);
 
-        alert("No se pudo cargar el archivo ZIP");
+        alert("No se pudo cargar el GeoJSON");
 
     });
 
