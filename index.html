@@ -1,33 +1,56 @@
-     <!DOCTYPE html>
-<html>
+   <!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta charset="utf-8">
-    <title>Mapa de Panamá con Penonomé y Clima</title>
+    <meta charset="UTF-8">
+    <title>Penonomé y Clima</title>
 
     <link rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
     <style>
+        body{
+            margin:0;
+            padding:0;
+        }
+
         #map{
-            height:100vh;
             width:100%;
+            height:100vh;
+        }
+
+        .titulo{
+            position:absolute;
+            top:10px;
+            left:50px;
+            z-index:1000;
+            background:white;
+            padding:10px;
+            border-radius:8px;
+            font-family:Arial;
+            font-size:18px;
+            font-weight:bold;
+            box-shadow:0 0 10px rgba(0,0,0,0.3);
         }
     </style>
 </head>
 
 <body>
 
+<div class="titulo">
+    Mapa Climático de Penonomé - Panamá
+</div>
+
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Librería para leer SHP -->
+<!-- Librería SHP -->
 <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
 <script>
 
     // CREAR MAPA
-    var map = L.map('map').setView([8.51, -80.36], 9);
+    var map = L.map('map').setView([8.5189, -80.3573], 10);
 
     // MAPA BASE
     var osm = L.tileLayer(
@@ -37,37 +60,44 @@
         }
     ).addTo(map);
 
-    // CAPA CLIMÁTICA
+    // CAPA DE CLIMA
     var clima = L.tileLayer(
-        'https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=TU_API_KEY',
+        'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=TU_API_KEY',
         {
-            attribution:'OpenWeatherMap'
+            attribution:'© OpenWeatherMap',
+            opacity:0.6
         }
-    );
+    ).addTo(map);
 
     // CARGAR SHAPEFILE DE PENONOMÉ
     shp("data/penonome.zip").then(function(data){
 
         var penonome = L.geoJSON(data,{
-            style:{
-                color:"red",
-                weight:3,
-                fillColor:"orange",
-                fillOpacity:0.4
+
+            style:function(feature){
+                return{
+                    color:"blue",
+                    weight:3,
+                    fillColor:"cyan",
+                    fillOpacity:0.2
+                };
             },
+
             onEachFeature:function(feature, layer){
 
                 if(feature.properties){
 
                     layer.bindPopup(
+                        "<h3>Penonomé</h3>" +
                         "<b>Distrito:</b> " +
                         feature.properties.NAME_2
                     );
                 }
             }
+
         }).addTo(map);
 
-        // AJUSTAR MAPA
+        // AJUSTAR ZOOM
         map.fitBounds(penonome.getBounds());
 
         // CONTROL DE CAPAS
@@ -77,7 +107,9 @@
         };
 
         L.control.layers(
-            {"OpenStreetMap":osm},
+            {
+                "OpenStreetMap": osm
+            },
             overlays
         ).addTo(map);
 
