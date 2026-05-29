@@ -1,8 +1,8 @@
-   <!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Penonomé y Clima</title>
+    <title>Provincias de Panamá y Clima</title>
 
     <link rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
@@ -24,12 +24,12 @@
             left:50px;
             z-index:1000;
             background:white;
-            padding:10px;
-            border-radius:8px;
+            padding:10px 15px;
+            border-radius:10px;
             font-family:Arial;
-            font-size:18px;
+            font-size:20px;
             font-weight:bold;
-            box-shadow:0 0 10px rgba(0,0,0,0.3);
+            box-shadow:0 0 10px rgba(0,0,0,0.4);
         }
     </style>
 </head>
@@ -37,20 +37,20 @@
 <body>
 
 <div class="titulo">
-    Mapa Climático de Penonomé - Panamá
+    Provincias de Panamá con Clima
 </div>
 
 <div id="map"></div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Librería SHP -->
+<!-- Librería para SHP -->
 <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
 <script>
 
     // CREAR MAPA
-    var map = L.map('map').setView([8.5189, -80.3573], 10);
+    var map = L.map('map').setView([8.5, -80], 7);
 
     // MAPA BASE
     var osm = L.tileLayer(
@@ -60,50 +60,69 @@
         }
     ).addTo(map);
 
-    // CAPA DE CLIMA
+    // CAPA CLIMÁTICA
     var clima = L.tileLayer(
-        'https://tile.openweathermap.org/map/temp_new/{z}/{x}/{y}.png?appid=TU_API_KEY',
+        'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=TU_API_KEY',
         {
             attribution:'© OpenWeatherMap',
-            opacity:0.6
+            opacity:0.5
         }
     ).addTo(map);
 
-    // CARGAR SHAPEFILE DE PENONOMÉ
-    shp("data/penonome.zip").then(function(data){
+    // COLORES ALEATORIOS
+    function getColor(){
+        var colors = [
+            "#ff0000",
+            "#00ff00",
+            "#0000ff",
+            "#ffff00",
+            "#ff00ff",
+            "#00ffff",
+            "#ffa500",
+            "#800080",
+            "#008000",
+            "#8b4513"
+        ];
 
-        var penonome = L.geoJSON(data,{
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    // CARGAR SHAPEFILE DE PROVINCIAS
+    shp("data/provincias_panama.zip").then(function(data){
+
+        var provincias = L.geoJSON(data,{
 
             style:function(feature){
                 return{
-                    color:"blue",
-                    weight:3,
-                    fillColor:"cyan",
-                    fillOpacity:0.2
+                    color:"black",
+                    weight:1.5,
+                    fillColor:getColor(),
+                    fillOpacity:0.5
                 };
             },
 
             onEachFeature:function(feature, layer){
 
-                if(feature.properties){
+                var nombre = "Provincia";
 
-                    layer.bindPopup(
-                        "<h3>Penonomé</h3>" +
-                        "<b>Distrito:</b> " +
-                        feature.properties.NAME_2
-                    );
+                if(feature.properties.NAME_1){
+                    nombre = feature.properties.NAME_1;
                 }
+
+                layer.bindPopup(
+                    "<h3>" + nombre + "</h3>"
+                );
             }
 
         }).addTo(map);
 
-        // AJUSTAR ZOOM
-        map.fitBounds(penonome.getBounds());
+        // AJUSTAR MAPA
+        map.fitBounds(provincias.getBounds());
 
         // CONTROL DE CAPAS
         var overlays = {
             "Clima": clima,
-            "Penonomé": penonome
+            "Provincias": provincias
         };
 
         L.control.layers(
