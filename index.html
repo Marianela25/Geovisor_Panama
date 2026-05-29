@@ -1,205 +1,222 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Geovisor de Playas de Panamá</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- Leaflet CSS -->
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  />
+<title>Geovisor de Playas de Panamá</title>
 
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #eaf9ff;
-    }
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
-    header {
-      background: linear-gradient(90deg, #0099cc, #00c2a8);
-      color: white;
-      padding: 15px 25px;
-      text-align: center;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
-    }
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 28px;
-    }
+body{
+    font-family:Arial, sans-serif;
+}
 
-    header p {
-      margin: 5px 0 0;
-      font-size: 15px;
-    }
+header{
+    background:linear-gradient(90deg,#0099cc,#00c9a7);
+    color:white;
+    text-align:center;
+    padding:20px;
+    box-shadow:0 2px 8px rgba(0,0,0,.2);
+}
 
-    #map {
-      width: 100%;
-      height: calc(100vh - 90px);
-    }
+header h1{
+    margin-bottom:8px;
+}
 
-    .legend {
-      background: white;
-      padding: 12px;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
-      line-height: 1.6;
-      font-size: 14px;
-    }
+#map{
+    width:100%;
+    height:calc(100vh - 110px);
+}
 
-    .legend h3 {
-      margin: 0 0 8px;
-      color: #0077a3;
-      font-size: 16px;
-    }
+.legend{
+    background:white;
+    padding:10px;
+    border-radius:10px;
+    box-shadow:0 0 10px rgba(0,0,0,.3);
+    line-height:1.8;
+}
 
-    .symbol {
-      display: inline-block;
-      width: 18px;
-      height: 18px;
-      margin-right: 6px;
-      border-radius: 50%;
-      vertical-align: middle;
-      border: 2px solid white;
-      box-shadow: 0 0 3px #555;
-    }
+.symbol{
+    width:15px;
+    height:15px;
+    display:inline-block;
+    border-radius:50%;
+    margin-right:5px;
+}
 
-    .surf { background: #ff6b6b; }
-    .turistica { background: #ffd93d; }
-    .familiar { background: #6bcb77; }
-    .natural { background: #4d96ff; }
+.surf{
+    background:#ff6b6b;
+}
 
-    .popup-title {
-      font-weight: bold;
-      font-size: 16px;
-      color: #0077a3;
-    }
-  </style>
+.turistica{
+    background:#ffd93d;
+}
+
+.familiar{
+    background:#6bcb77;
+}
+
+.natural{
+    background:#4d96ff;
+}
+</style>
+
 </head>
 <body>
 
-  <header>
+<header>
     <h1>🌊 Geovisor de Playas de Panamá</h1>
-    <p>Mapa interactivo con simbología creativa para representar playas turísticas, familiares, naturales y de surf</p>
-  </header>
+    <p>Mapa interactivo con simbología creativa</p>
+</header>
 
-  <div id="map"></div>
+<div id="map"></div>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-  <script>
-    // Mapa centrado en Panamá
-    const map = L.map('map').setView([8.55, -80.1], 7);
+<script>
 
-    // Capa base tipo mapa de GitHub/OpenStreetMap
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      maxZoom: 19,
-      attribution: 'Mapa base: © OpenStreetMap | Geovisor para GitHub Pages'
-    }).addTo(map);
+// Crear mapa
+const map = L.map('map').setView([8.5380,-80.7821],7);
 
-    // Datos de playas. Puedes editar o agregar más puntos.
-    const playas = [
-      {
-        nombre: 'Playa Venao',
-        provincia: 'Los Santos',
-        tipo: 'surf',
-        descripcion: 'Famosa por sus olas, ideal para surf y turismo juvenil.',
-        coords: [7.4333, -80.1867]
-      },
-      {
-        nombre: 'Isla Grande',
-        provincia: 'Colón',
-        tipo: 'turistica',
-        descripcion: 'Playa turística con ambiente caribeño y aguas cristalinas.',
-        coords: [9.6333, -79.5667]
-      },
-      {
-        nombre: 'Playa Blanca',
-        provincia: 'Coclé',
-        tipo: 'familiar',
-        descripcion: 'Zona familiar y hotelera, muy visitada por turistas nacionales.',
-        coords: [8.35, -80.15]
-      },
-      {
-        nombre: 'Santa Catalina',
-        provincia: 'Veraguas',
-        tipo: 'surf',
-        descripcion: 'Destino reconocido para surfistas y entrada hacia Coiba.',
-        coords: [7.6333, -81.25]
-      },
-      {
-        nombre: 'Red Frog Beach',
-        provincia: 'Bocas del Toro',
-        tipo: 'natural',
-        descripcion: 'Playa natural rodeada de vegetación tropical.',
-        coords: [9.3333, -82.1667]
-      },
-      {
-        nombre: 'Playa Las Lajas',
-        provincia: 'Chiriquí',
-        tipo: 'familiar',
-        descripcion: 'Playa amplia, tranquila y recomendada para paseos familiares.',
-        coords: [8.1667, -81.8667]
-      }
-    ];
+// Capa base OpenStreetMap
+L.tileLayer(
+'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+{
+    attribution:'© OpenStreetMap'
+}
+).addTo(map);
 
-    // Colores según tipo de playa
-    const colores = {
-      surf: '#ff6b6b',
-      turistica: '#ffd93d',
-      familiar: '#6bcb77',
-      natural: '#4d96ff'
-    };
+// Playas
+const playas = [
 
-    // Emojis según tipo de playa
-    const emojis = {
-      surf: '🏄',
-      turistica: '🌴',
-      familiar: '👨‍👩‍👧',
-      natural: '🐚'
-    };
+{
+nombre:"Playa Venao",
+coords:[7.433,-80.187],
+tipo:"surf",
+emoji:"🏄"
+},
 
-    // Crear marcadores personalizados
-    playas.forEach(playa => {
-      const icono = L.divIcon({
-        html: `<div style="
-          background:${colores[playa.tipo]};
-          width:38px;
-          height:38px;
-          border-radius:50%;
-          border:3px solid white;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          font-size:20px;
-          box-shadow:0 2px 8px rgba(0,0,0,0.35);
-        ">${emojis[playa.tipo]}</div>`,
-        className: '',
-        iconSize: [38, 38],
-        iconAnchor: [19, 19]
-      });
+{
+nombre:"Playa Blanca",
+coords:[8.356,-80.149],
+tipo:"familiar",
+emoji:"👨‍👩‍👧"
+},
 
-      L.marker(playa.coords, { icon: icono })
-        .addTo(map)
-        .bindPopup(`
-          <div class="popup-title">${playa.nombre}</div>
-          <b>Provincia:</b> ${playa.provincia}<br>
-          <b>Tipo:</b> ${playa.tipo}<br>
-          <p>${playa.descripcion}</p>
-        `);
-    });
+{
+nombre:"Isla Grande",
+coords:[9.626,-79.566],
+tipo:"turistica",
+emoji:"🌴"
+},
 
-    // Leyenda del mapa
-    const legend = L.control({ position: 'bottomright' });
+{
+nombre:"Santa Catalina",
+coords:[7.633,-81.250],
+tipo:"surf",
+emoji:"🏄"
+},
 
-    legend.onAdd = function () {
-      const div = L.DomUtil.create('div', 'legend');
-      div.innerHTML = `
-        <h3>🏖️ Simbología</h3>
-        <span class="symbol surf"></span> Playa de surf<br>
-        <span class="symbol turistica"></span> Playa turística<br>
-        <span class="symbol familia
+{
+nombre:"Red Frog Beach",
+coords:[9.343,-82.192],
+tipo:"natural",
+emoji:"🐚"
+}
+
+];
+
+// Colores
+const colores = {
+surf:"#ff6b6b",
+turistica:"#ffd93d",
+familiar:"#6bcb77",
+natural:"#4d96ff"
+};
+
+// Marcadores
+playas.forEach(playa => {
+
+const icono = L.divIcon({
+html:`
+<div style="
+width:40px;
+height:40px;
+border-radius:50%;
+background:${colores[playa.tipo]};
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:20px;
+border:3px solid white;
+box-shadow:0 0 8px rgba(0,0,0,.4);
+">
+${playa.emoji}
+</div>
+`,
+className:"",
+iconSize:[40,40]
+});
+
+L.marker(playa.coords,{icon:icono})
+.addTo(map)
+.bindPopup(`
+<h3>${playa.nombre}</h3>
+<b>Tipo:</b> ${playa.tipo}
+`);
+
+});
+
+// Leyenda
+const legend = L.control({position:'bottomright'});
+
+legend.onAdd = function(){
+
+const div = L.DomUtil.create('div','legend');
+
+div.innerHTML=`
+<h4>🏖️ Simbología</h4>
+
+<div>
+<span class="symbol surf"></span>
+Surf
+</div>
+
+<div>
+<span class="symbol turistica"></span>
+Turística
+</div>
+
+<div>
+<span class="symbol familiar"></span>
+Familiar
+</div>
+
+<div>
+<span class="symbol natural"></span>
+Natural
+</div>
+`;
+
+return div;
+};
+
+legend.addTo(map);
+
+// SOLUCIÓN DEL PROBLEMA DE MAPA EN BLANCO
+setTimeout(function(){
+map.invalidateSize();
+},500);
+
+</script>
+
+</body>
+</html>
