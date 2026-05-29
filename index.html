@@ -2,12 +2,14 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Provincias de Panamá y Clima</title>
+    <title>Distritos de Panamá 2024</title>
 
+    <!-- LEAFLET -->
     <link rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
     <style>
+
         body{
             margin:0;
             padding:0;
@@ -21,30 +23,32 @@
         .titulo{
             position:absolute;
             top:10px;
-            left:50px;
+            left:60px;
             z-index:1000;
             background:white;
-            padding:10px 15px;
+            padding:12px;
             border-radius:10px;
             font-family:Arial;
             font-size:20px;
             font-weight:bold;
             box-shadow:0 0 10px rgba(0,0,0,0.4);
         }
+
     </style>
 </head>
 
 <body>
 
 <div class="titulo">
-    Provincias de Panamá con Clima
+    Distritos de Panamá 2024
 </div>
 
 <div id="map"></div>
 
+<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
-<!-- Librería para SHP -->
+<!-- SHPJS -->
 <script src="https://unpkg.com/shpjs@latest/dist/shp.min.js"></script>
 
 <script>
@@ -60,18 +64,10 @@
         }
     ).addTo(map);
 
-    // CAPA CLIMÁTICA
-    var clima = L.tileLayer(
-        'https://tile.openweathermap.org/map/clouds_new/{z}/{x}/{y}.png?appid=TU_API_KEY',
-        {
-            attribution:'© OpenWeatherMap',
-            opacity:0.5
-        }
-    ).addTo(map);
-
-    // COLORES ALEATORIOS
+    // FUNCIÓN DE COLORES
     function getColor(){
-        var colors = [
+
+        var colores = [
             "#ff0000",
             "#00ff00",
             "#0000ff",
@@ -81,21 +77,28 @@
             "#ffa500",
             "#800080",
             "#008000",
-            "#8b4513"
+            "#8b4513",
+            "#ff1493",
+            "#4682b4"
         ];
 
-        return colors[Math.floor(Math.random() * colors.length)];
+        return colores[Math.floor(Math.random() * colores.length)];
     }
 
-    // CARGAR SHAPEFILE DE PROVINCIAS
-    shp("data/provincias_panama.zip").then(function(data){
+    // CARGAR SHAPEFILE ZIP
+    shp("Distritos_2024.zip")
 
-        var provincias = L.geoJSON(data,{
+    .then(function(data){
+
+        console.log(data);
+
+        var distritos = L.geoJSON(data,{
 
             style:function(feature){
+
                 return{
                     color:"black",
-                    weight:1.5,
+                    weight:1,
                     fillColor:getColor(),
                     fillOpacity:0.5
                 };
@@ -103,10 +106,16 @@
 
             onEachFeature:function(feature, layer){
 
-                var nombre = "Provincia";
+                var nombre = "Distrito";
 
-                if(feature.properties.NAME_1){
-                    nombre = feature.properties.NAME_1;
+                // CAMBIAR SI TU CAMPO TIENE OTRO NOMBRE
+                if(feature.properties){
+
+                    nombre =
+                    feature.properties.NOMBRE ||
+                    feature.properties.NAME_2 ||
+                    feature.properties.DISTRITO ||
+                    "Distrito";
                 }
 
                 layer.bindPopup(
@@ -117,20 +126,25 @@
         }).addTo(map);
 
         // AJUSTAR MAPA
-        map.fitBounds(provincias.getBounds());
+        map.fitBounds(distritos.getBounds());
 
         // CONTROL DE CAPAS
-        var overlays = {
-            "Clima": clima,
-            "Provincias": provincias
-        };
-
         L.control.layers(
             {
                 "OpenStreetMap": osm
             },
-            overlays
+            {
+                "Distritos 2024": distritos
+            }
         ).addTo(map);
+
+    })
+
+    .catch(function(error){
+
+        console.error("ERROR AL CARGAR EL SHAPEFILE:", error);
+
+        alert("No se pudo cargar el archivo ZIP");
 
     });
 
