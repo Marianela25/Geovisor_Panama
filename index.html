@@ -1,9 +1,10 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <title>Distritos de Panamá</title>
 
+    <!-- LEAFLET -->
     <link rel="stylesheet"
     href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 
@@ -44,6 +45,7 @@
 
 <div id="map"></div>
 
+<!-- LEAFLET -->
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <script>
@@ -59,7 +61,7 @@
         }
     ).addTo(map);
 
-    // FUNCIÓN DE COLOR
+    // FUNCIÓN DE COLORES
     function getColor(){
 
         var colores = [
@@ -80,19 +82,21 @@
         return colores[Math.floor(Math.random() * colores.length)];
     }
 
-    // CARGAR GEOJSON DESDE INTERNET
-    fetch('https://raw.githubusercontent.com/codeforgermany/click_that_hood/main/public/data/panama-districts.geojson')
+    // CARGAR GEOJSON LOCAL
+    fetch("Distritos.geojson")
 
     .then(response => response.json())
 
     .then(data => {
+
+        console.log(data);
 
         var distritos = L.geoJSON(data, {
 
             style:function(feature){
 
                 return{
-                    color:'black',
+                    color:"black",
                     weight:1,
                     fillColor:getColor(),
                     fillOpacity:0.5
@@ -101,7 +105,17 @@
 
             onEachFeature:function(feature, layer){
 
-                var nombre = feature.properties.name || "Distrito";
+                var nombre = "Distrito";
+
+                if(feature.properties){
+
+                    nombre =
+                    feature.properties.NOMBRE ||
+                    feature.properties.NAME_2 ||
+                    feature.properties.DISTRITO ||
+                    feature.properties.name ||
+                    "Distrito";
+                }
 
                 layer.bindPopup(
                     "<h3>" + nombre + "</h3>"
@@ -119,7 +133,7 @@
 
         console.error(error);
 
-        alert("No se pudo cargar el GeoJSON");
+        alert("No se pudo cargar el archivo GeoJSON");
 
     });
 
