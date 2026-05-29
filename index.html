@@ -1,143 +1,205 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Distritos de Panamá</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Geovisor de Playas de Panamá</title>
 
-    <!-- LEAFLET -->
-    <link rel="stylesheet"
-    href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <!-- Leaflet CSS -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
-    <style>
-
-        body{
-            margin:0;
-            padding:0;
-        }
-
-        #map{
-            width:100%;
-            height:100vh;
-        }
-
-        .titulo{
-            position:absolute;
-            top:10px;
-            left:60px;
-            z-index:1000;
-            background:white;
-            padding:12px;
-            border-radius:10px;
-            font-family:Arial;
-            font-size:20px;
-            font-weight:bold;
-            box-shadow:0 0 10px rgba(0,0,0,0.4);
-        }
-
-    </style>
-</head>
-
-<body>
-
-<div class="titulo">
-    Distritos de Panamá
-</div>
-
-<div id="map"></div>
-
-<!-- LEAFLET -->
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
-<script>
-
-    // CREAR MAPA
-    var map = L.map('map').setView([8.5, -80], 7);
-
-    // MAPA BASE
-    L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        {
-            attribution:'© OpenStreetMap'
-        }
-    ).addTo(map);
-
-    // FUNCIÓN DE COLORES
-    function getColor(){
-
-        var colores = [
-            "#ff0000",
-            "#00ff00",
-            "#0000ff",
-            "#ffff00",
-            "#ff00ff",
-            "#00ffff",
-            "#ffa500",
-            "#800080",
-            "#008000",
-            "#8b4513",
-            "#ff1493",
-            "#4682b4"
-        ];
-
-        return colores[Math.floor(Math.random() * colores.length)];
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #eaf9ff;
     }
 
-    // CARGAR GEOJSON LOCAL
-    fetch("Distritos.geojson")
+    header {
+      background: linear-gradient(90deg, #0099cc, #00c2a8);
+      color: white;
+      padding: 15px 25px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
 
-    .then(response => response.json())
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+    }
 
-    .then(data => {
+    header p {
+      margin: 5px 0 0;
+      font-size: 15px;
+    }
 
-        console.log(data);
+    #map {
+      width: 100%;
+      height: calc(100vh - 90px);
+    }
 
-        var distritos = L.geoJSON(data, {
+    .legend {
+      background: white;
+      padding: 12px;
+      border-radius: 12px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+      line-height: 1.6;
+      font-size: 14px;
+    }
 
-            style:function(feature){
+    .legend h3 {
+      margin: 0 0 8px;
+      color: #0077a3;
+      font-size: 16px;
+    }
 
-                return{
-                    color:"black",
-                    weight:1,
-                    fillColor:getColor(),
-                    fillOpacity:0.5
-                };
-            },
+    .symbol {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-right: 6px;
+      border-radius: 50%;
+      vertical-align: middle;
+      border: 2px solid white;
+      box-shadow: 0 0 3px #555;
+    }
 
-            onEachFeature:function(feature, layer){
+    .surf { background: #ff6b6b; }
+    .turistica { background: #ffd93d; }
+    .familiar { background: #6bcb77; }
+    .natural { background: #4d96ff; }
 
-                var nombre = "Distrito";
+    .popup-title {
+      font-weight: bold;
+      font-size: 16px;
+      color: #0077a3;
+    }
+  </style>
+</head>
+<body>
 
-                if(feature.properties){
+  <header>
+    <h1>🌊 Geovisor de Playas de Panamá</h1>
+    <p>Mapa interactivo con simbología creativa para representar playas turísticas, familiares, naturales y de surf</p>
+  </header>
 
-                    nombre =
-                    feature.properties.NOMBRE ||
-                    feature.properties.NAME_2 ||
-                    feature.properties.DISTRITO ||
-                    feature.properties.name ||
-                    "Distrito";
-                }
+  <div id="map"></div>
 
-                layer.bindPopup(
-                    "<h3>" + nombre + "</h3>"
-                );
-            }
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
-        }).addTo(map);
+  <script>
+    // Mapa centrado en Panamá
+    const map = L.map('map').setView([8.55, -80.1], 7);
 
-        // AJUSTAR MAPA
-        map.fitBounds(distritos.getBounds());
+    // Capa base tipo mapa de GitHub/OpenStreetMap
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: 'Mapa base: © OpenStreetMap | Geovisor para GitHub Pages'
+    }).addTo(map);
 
-    })
+    // Datos de playas. Puedes editar o agregar más puntos.
+    const playas = [
+      {
+        nombre: 'Playa Venao',
+        provincia: 'Los Santos',
+        tipo: 'surf',
+        descripcion: 'Famosa por sus olas, ideal para surf y turismo juvenil.',
+        coords: [7.4333, -80.1867]
+      },
+      {
+        nombre: 'Isla Grande',
+        provincia: 'Colón',
+        tipo: 'turistica',
+        descripcion: 'Playa turística con ambiente caribeño y aguas cristalinas.',
+        coords: [9.6333, -79.5667]
+      },
+      {
+        nombre: 'Playa Blanca',
+        provincia: 'Coclé',
+        tipo: 'familiar',
+        descripcion: 'Zona familiar y hotelera, muy visitada por turistas nacionales.',
+        coords: [8.35, -80.15]
+      },
+      {
+        nombre: 'Santa Catalina',
+        provincia: 'Veraguas',
+        tipo: 'surf',
+        descripcion: 'Destino reconocido para surfistas y entrada hacia Coiba.',
+        coords: [7.6333, -81.25]
+      },
+      {
+        nombre: 'Red Frog Beach',
+        provincia: 'Bocas del Toro',
+        tipo: 'natural',
+        descripcion: 'Playa natural rodeada de vegetación tropical.',
+        coords: [9.3333, -82.1667]
+      },
+      {
+        nombre: 'Playa Las Lajas',
+        provincia: 'Chiriquí',
+        tipo: 'familiar',
+        descripcion: 'Playa amplia, tranquila y recomendada para paseos familiares.',
+        coords: [8.1667, -81.8667]
+      }
+    ];
 
-    .catch(error => {
+    // Colores según tipo de playa
+    const colores = {
+      surf: '#ff6b6b',
+      turistica: '#ffd93d',
+      familiar: '#6bcb77',
+      natural: '#4d96ff'
+    };
 
-        console.error(error);
+    // Emojis según tipo de playa
+    const emojis = {
+      surf: '🏄',
+      turistica: '🌴',
+      familiar: '👨‍👩‍👧',
+      natural: '🐚'
+    };
 
-        alert("No se pudo cargar el archivo GeoJSON");
+    // Crear marcadores personalizados
+    playas.forEach(playa => {
+      const icono = L.divIcon({
+        html: `<div style="
+          background:${colores[playa.tipo]};
+          width:38px;
+          height:38px;
+          border-radius:50%;
+          border:3px solid white;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          font-size:20px;
+          box-shadow:0 2px 8px rgba(0,0,0,0.35);
+        ">${emojis[playa.tipo]}</div>`,
+        className: '',
+        iconSize: [38, 38],
+        iconAnchor: [19, 19]
+      });
 
+      L.marker(playa.coords, { icon: icono })
+        .addTo(map)
+        .bindPopup(`
+          <div class="popup-title">${playa.nombre}</div>
+          <b>Provincia:</b> ${playa.provincia}<br>
+          <b>Tipo:</b> ${playa.tipo}<br>
+          <p>${playa.descripcion}</p>
+        `);
     });
 
-</script>
+    // Leyenda del mapa
+    const legend = L.control({ position: 'bottomright' });
 
-</body>
-</html>
+    legend.onAdd = function () {
+      const div = L.DomUtil.create('div', 'legend');
+      div.innerHTML = `
+        <h3>🏖️ Simbología</h3>
+        <span class="symbol surf"></span> Playa de surf<br>
+        <span class="symbol turistica"></span> Playa turística<br>
+        <span class="symbol familia
